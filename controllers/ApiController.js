@@ -4,7 +4,7 @@ import RepositoryModel from "../models/RepositoryModel.js";
 const apiController = {
   async getUsers(req, res, next) {
     const accessToken = process.env.GITHUB_ACCESS_TOKEN;
-    const orgName = "facebook";
+    const orgName = req.params.org || "facebook";
 
     try {
       const response = await axios.get(
@@ -65,7 +65,9 @@ const apiController = {
       res.status(200).json({ results });
     } catch (error) {
       console.error(`Error fetching data for ${orgName}:`, error.message);
-      res.status(500).json({ error: "Internal server error" });
+
+      next(error);
+      //   res.status(500).json({ error: "Internal server error" });
     }
   },
 };

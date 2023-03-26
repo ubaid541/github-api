@@ -4,6 +4,7 @@ import cors from "cors";
 import axios from "axios";
 import routes from "./routes/index.js";
 import mongoose from "mongoose";
+import { createError } from "./utils/errors.js";
 dotenv.config();
 
 const app = express();
@@ -26,6 +27,18 @@ mongoose.connection.on("disconnected", () => {
 app.use(express.json());
 app.use(cors());
 app.use("/", routes); //api
+
+// error handling middlware
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong.";
+  return res.status(errorStatus).json({
+    success: false,
+    status: errorStatus,
+    message: errorMessage,
+    stack: err.stack,
+  });
+});
 
 const PORT = process.env.PORT;
 
